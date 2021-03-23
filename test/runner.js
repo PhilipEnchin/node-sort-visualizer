@@ -22,13 +22,19 @@ var runTests = function () {
     throw new Error('Not all functions are being tested...');
   }
   for (var funcName in testSuite) {
-    console.log('Testing function "' + funcName + '":');
+    console.log('\nTesting function "' + funcName + '":');
     var unitTest = testSuite[funcName];
     for (i in unitTest) {
       console.log('  - ' + unitTest[i].description);
-      unitTest[i].assertion(f[funcName]);
+      try {
+        unitTest[i].assertion(f[funcName]);
+      } catch (e) {
+        console.log(e + '\n');
+        process.exit(1);
+      }
     }
   }
+  console.log();
 };
 
 require('./tests')(addTest, require('./assert'));
