@@ -1,3 +1,4 @@
+set -e
 source $NVM_DIR/nvm.sh
 
 NODE_VERSION=$1
