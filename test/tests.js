@@ -28,4 +28,18 @@ module.exports = function (addTest, assert) {
       assert.greaterThan(tally[i], 0);
     }
   });
+
+  addTest('makeCountingArray', 'length of array matches argument', function(f) {
+    var len = 42;
+    var arr = f(len);
+    assert.equal(arr.length, len);
+  });
+
+  addTest('makeCountingArray', 'contains number 1 to n in order', function(f) {
+    var len = 42;
+    var arr = f(len);
+    for (var i = 0; i < len; i++) {
+      assert.equal(arr[i], i + 1);
+    }
+  });
 };
