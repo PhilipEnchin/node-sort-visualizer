@@ -8,7 +8,7 @@ var makeFrame = function (arr) {
 
 module.exports = {
   makeCountingArray: function (len) {
-    var arr = Array(len).fill(0);
+    var arr = Array(len);
     for (var i = 0; i < len; i++) {
       arr[i] = i + 1;
     }
