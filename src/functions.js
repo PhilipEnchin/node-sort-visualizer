@@ -15,6 +15,16 @@ module.exports = {
 
     return arr;
   },
+  makeShuffledArray: function (len) {
+    var arr = module.exports.makeCountingArray(len);
+    for (var i = 1; i < len; i++) {
+      var j = module.exports.randomUpTo(i);
+      var temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+    return arr;
+  },
   randomUpTo: function (upper) {
     return Math.floor(Math.random() * (upper + 1));
   }
