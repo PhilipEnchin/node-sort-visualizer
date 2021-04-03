@@ -18,4 +18,18 @@ assert.not = function (isTrue) {
   if (isTrue !== false) throw new Error ('Expected ' + isTrue + ' to be false');
 }
 
+assert.throws = function (wrapperFunc) {
+  try {
+    wrapperFunc();
+    var error = new Error('Expected error to be thrown');
+    error.didNotThrow = true;
+    throw error;
+  } catch (e) {
+    if (e.didNotThrow) {
+      delete e.didNotThrow;
+      throw e;
+    }
+  }
+};
+
 module.exports = assert;
