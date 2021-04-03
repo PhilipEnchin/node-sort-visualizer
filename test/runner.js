@@ -29,7 +29,7 @@ var runTests = function () {
       try {
         unitTest[i].assertion(f[funcName]);
       } catch (e) {
-        console.log(e + '\n');
+        process.stdout.write(e + '\n\n');
         process.exit(1);
       }
     }
