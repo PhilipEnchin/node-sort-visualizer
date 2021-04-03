@@ -1,6 +1,8 @@
 var stubs = [];
 
-module.exports.stub = function (obj, funcName, replacement) {
+var stubFunctions = {};
+
+stubFunctions.stub = function (obj, funcName, replacement) {
   stubs.push({
     obj: obj,
     funcName: funcName,
@@ -9,7 +11,7 @@ module.exports.stub = function (obj, funcName, replacement) {
   obj[funcName] = replacement;
 };
 
-module.exports.unstub = function (obj, funcName) {
+stubFunctions.unstub = function (obj, funcName) {
   for (var i = 0; i < stubs.length; i++) {
     if (stubs[i].obj === obj && stubs[i].funcName === funcName) {
       obj[funcName] = stubs[i].func;
@@ -20,6 +22,8 @@ module.exports.unstub = function (obj, funcName) {
   throw new Error('Did not find ' + funcName + ' in stubs for ' + obj);
 };
 
-module.exports.resetStubs = function () {
-  while (stubs.length) module.exports.unstub(stubs[0].obj, stubs[0].funcName)
+stubFunctions.resetStubs = function () {
+  while (stubs.length) stubFunctions.unstub(stubs[0].obj, stubs[0].funcName)
 };
+
+module.exports = stubFunctions;
