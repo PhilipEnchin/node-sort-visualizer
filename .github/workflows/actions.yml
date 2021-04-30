@@ -1,6 +1,20 @@
 name: Actions
 on: push
 jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install
+        run: npm ci
+      - name: Coverage
+        run: npm run coverage
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -14,6 +28,7 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+
   test:
     runs-on: ubuntu-latest
     strategy:

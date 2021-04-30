@@ -2,9 +2,11 @@
   "devDependencies": {
     "eslint": "^7.23.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.22.1",
+    "nyc": "^15.1.0"
   },
   "scripts": {
+    "coverage": "nyc --check-coverage --lines=100 node test/runner.js",
     "lint": "eslint ."
   }
 }
