@@ -1,0 +1,13 @@
+'use strict';
+
+module.exports = {
+  extends: 'airbnb-base/legacy',
+  rules: {
+    'comma-dangle': ['error', 'always-multiline'],
+    'func-names': 'off',
+    'no-console': ['error', { allow: ['log'] }],
+    'no-multi-assign': 'off',
+    'no-param-reassign': ['error', { props: false }],
+    'no-plusplus': 'off',
+  },
+};

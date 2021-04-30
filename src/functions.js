@@ -1,23 +1,33 @@
-module.exports.makeCountingArray = function (len) {
+'use strict';
+
+var makeCountingArray = function (len) {
   var arr = Array(len);
-  for (var i = 0; i < len; i++) {
+  var i;
+  for (i = 0; i < len; i++) {
     arr[i] = i + 1;
   }
 
   return arr;
 };
 
-module.exports.makeShuffledArray = function (len) {
+var makeShuffledArray = function (len) {
   var arr = module.exports.makeCountingArray(len);
-  for (var i = 1; i < len; i++) {
-    var j = module.exports.randomUpTo(i);
-    var temp = arr[i];
+  var i; var j; var temp;
+  for (i = 1; i < len; i++) {
+    j = module.exports.randomUpTo(i);
+    temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
   }
   return arr;
 };
 
-module.exports.randomUpTo = function (upper) {
+var randomUpTo = function (upper) {
   return Math.floor(Math.random() * (upper + 1));
+};
+
+module.exports = {
+  makeCountingArray: makeCountingArray,
+  makeShuffledArray: makeShuffledArray,
+  randomUpTo: randomUpTo,
 };

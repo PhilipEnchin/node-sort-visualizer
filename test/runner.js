@@ -1,5 +1,7 @@
+'use strict';
+
 var f = require('../src/functions');
-const resetStubs = require('./stub').resetStubs;
+var resetStubs = require('./stub').resetStubs;
 
 var testSuite = {};
 
@@ -14,21 +16,25 @@ var addTest = function (funcName, description, testFunc) {
   var unitTest = testSuite[funcName] = testSuite[funcName] || makeUnitTest(funcName);
   unitTest.push({
     description: description,
-    assertion: testFunc
-  })
+    assertion: testFunc,
+  });
 };
 
 var runTests = function () {
-  if (Object.keys(testSuite).length !== Object.keys(f).length) {
+  var funcIndex; var funcName;
+  var unitTestIndex; var unitTest;
+  var funcNames = Object.keys(testSuite);
+  if (funcNames.length !== Object.keys(f).length) {
     throw new Error('Not all functions are being tested...');
   }
-  for (var funcName in testSuite) {
+  for (funcIndex = 0; funcIndex < funcNames.length; funcIndex++) {
+    funcName = funcNames[funcIndex];
     console.log('\nTesting function "' + funcName + '":');
-    var unitTest = testSuite[funcName];
-    for (i in unitTest) {
-      console.log('  - ' + unitTest[i].description);
+    unitTest = testSuite[funcName];
+    for (unitTestIndex = 0; unitTestIndex < unitTest.length; unitTestIndex++) {
+      console.log('  - ' + unitTest[unitTestIndex].description);
       try {
-        unitTest[i].assertion(f[funcName]);
+        unitTest[unitTestIndex].assertion(f[funcName]);
       } catch (e) {
         resetStubs();
         console.log(e + '\n\n');
