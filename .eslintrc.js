@@ -5,6 +5,7 @@ module.exports = {
   rules: {
     'comma-dangle': ['error', 'always-multiline'],
     'func-names': 'off',
+    'max-len': 'off',
     'no-console': ['error', { allow: ['log'] }],
     'no-multi-assign': 'off',
     'no-param-reassign': ['error', { props: false }],
