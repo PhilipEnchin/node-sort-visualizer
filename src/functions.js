@@ -58,7 +58,7 @@ var makeShuffledArray = function (len) {
 
 // Return a random integer from 0 to upper
 var randomUpTo = function (upper) {
-  return Math.trunc(Math.random() * (upper + 1));
+  return Math.floor(Math.random() * (upper + 1));
 };
 
 module.exports = {
