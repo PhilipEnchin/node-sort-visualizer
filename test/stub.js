@@ -7,12 +7,17 @@ var resetStubs = function () {
 };
 
 var stub = function (obj, funcName, replacement) {
+  var stubbed = function () {
+    stubbed.calls.push(Array.prototype.slice.call(arguments));
+    return replacement.apply(obj, arguments);
+  };
+  stubbed.calls = [];
   stubs.push({
     obj: obj,
     funcName: funcName,
     originalFunc: obj[funcName],
   });
-  return obj[funcName] = replacement;
+  return obj[funcName] = stubbed;
 };
 
 var unstub = function (obj, funcName) {
@@ -37,7 +42,7 @@ module.exports = {
 // eslint-disable-next-line vars-on-top
 var assert = require('./assert');
 // eslint-disable-next-line vars-on-top
-var testObject = { testFunction1: function () {}, testFunction2: function () {} }; var originalTestFunction = testObject.testFunction; var replacementFunction = function () { testFunctionCallCount++; };
+var testObject = { testFunction1: function () {}, testFunction2: function () {} }; var replacementFunction = function () { testFunctionCallCount++; };
 // eslint-disable-next-line vars-on-top
 var previousTestFunctionCallCount = 0; var testFunctionCallCount = 0; var stubbedFunction;
 // eslint-disable-next-line vars-on-top
@@ -70,16 +75,34 @@ callOriginalTestFunction(); // Verify function 1 is unstubbed
 // stub
 callOriginalTestFunction(); // Verify original function call
 stubbedFunction = stub(testObject, 'testFunction1', replacementFunction); // Replace with stub
-assert.equal(testObject.testFunction1, replacementFunction);// Original function has been replaced with replacement function
-assert.equal(stubbedFunction, replacementFunction);// stub() has returned replacement function
+assert.equal(stubs.length, 1);
+assert.equal(testObject.testFunction1, stubbedFunction);// Original function has been replaced with replacement function
+stubbedFunction = stub(testObject, 'testFunction2', replacementFunction);
+assert.equal(stubs.length, 2);
+assert.equal(testObject.testFunction2, stubbedFunction);// stub() has returned replacement function
 callStub(); // Verify stub has replaced original
 resetStubs(); // Reset for next test
-callOriginalTestFunction(); // Make sure original function is back in place
 
 // unstub
-stubbedFunction = stub(testObject, 'testFunction1', replacementFunction); // Replace with stub
+callOriginalTestFunction(); // Verify original function call
+stub(testObject, 'testFunction1', replacementFunction); // Replace with stub
 callStub(); // Verify stub has replaced original
 assert.equal(stubs.length, 1);
 unstub(testObject, 'testFunction1');
 callOriginalTestFunction(); // Verify original has replaced stub
 assert.equal(stubs.length, 0);
+resetStubs();
+
+// calls
+callOriginalTestFunction(); // Verify original function call
+stubbedFunction = stub(testObject, 'testFunction1', replacementFunction); // Stub
+assert.type(stubbedFunction.calls, 'array'); // Verify calls array exists
+assert.equal(stubbedFunction.calls.length, 0); // Verify calls array is empty
+assert.equal(stubbedFunction.calls, testObject.testFunction1.calls); // Verify it's the same as on testFunction1
+stubbedFunction(1, 2, 3);
+testObject.testFunction1(4, 5, 6);
+stubbedFunction();
+stubbedFunction([]);
+assert.equal(stubbedFunction.calls.length, 4);
+assert.deepEqual(stubbedFunction.calls, [[1, 2, 3], [4, 5, 6], [], [[]]]);
+resetStubs();
