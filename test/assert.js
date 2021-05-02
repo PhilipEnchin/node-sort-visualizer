@@ -56,6 +56,11 @@ assert.not = function (isTrue) {
   if (isTrue !== false) throw new Error('Expected ' + isTrue + ' to be false');
 };
 
+// Asserts that arguments are not equal
+assert.notEqual = function (a, b) {
+  if (a === b) throw new Error('Expected ' + a + ' to not equal ' + b);
+};
+
 // Asserts that the argument function throws an error
 assert.throws = function (wrapperFunc) {
   var error;
@@ -156,6 +161,17 @@ module.exports = assert;
   assert.throws(function () { assert.not(true); });// true
   assert.throws(function () { assert.not(0); }); // falsey
   assert.throws(function () { assert.not(1); });// truthy
+}());
+
+(function () { // assert.notEqual
+  var a = [];
+  assert.throws(function () { assert.notEqual(1, 1); }); // Same type, same value
+  assert.throws(function () { assert.notEqual('1', '1'); }); // Same type, same value
+  assert.throws(function () { assert.notEqual(a, a); }); // Same array
+  assert.notEqual(3, 4); // Different value
+  assert.notEqual('1', 1); // Check for type coercion
+  assert.notEqual({}, {}); // Deeply equal
+  assert.notEqual([], []); // Deeply equal
 }());
 
 (function () { // assert.throws
