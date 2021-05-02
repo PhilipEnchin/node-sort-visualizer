@@ -10,5 +10,6 @@ module.exports = {
     'no-multi-assign': 'off',
     'no-param-reassign': ['error', { props: false }],
     'no-plusplus': 'off',
+    'no-use-before-define': ['error', { functions: false, variables: false }],
   },
 };

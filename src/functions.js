@@ -1,15 +1,49 @@
 'use strict';
 
-var makeCountingArray = function (len) {
+// Process array to make an object that can be used to render a frame
+var arraySnapshotToFrameObject = function (array, a, b) {
+  var attendance = makeBlankArray(array.length, false);
+  var missingValues = [];
+  var comparingIndices = [];
+  var extraComparingIndices = [];
+  array.forEach(function (value, i) {
+    attendance[value - 1] = true;
+    if (value === a || value === b) {
+      comparingIndices.push(i);
+    }
+  });
+  attendance.forEach(function (present, i) {
+    var value;
+    if (!present) {
+      value = i + 1;
+      if (value === a || value === b) extraComparingIndices.push(missingValues.length);
+      missingValues.push(value);
+    }
+  });
+  return {
+    array: array,
+    comparingIndices: comparingIndices,
+    extraData: {
+      array: missingValues,
+      comparingIndices: extraComparingIndices,
+    },
+  };
+};
+
+var makeBlankArray = function (len, defaultValue) {
   var arr = Array(len);
   var i;
-  for (i = 0; i < len; i++) {
-    arr[i] = i + 1;
-  }
-
+  var value = arguments.length < 2 ? null : defaultValue;
+  for (i = 0; i < len; i++) arr[i] = value;
   return arr;
 };
 
+// Make array of length n like this: [1, 2, ..., n - 1, n]
+var makeCountingArray = function (len) {
+  return makeBlankArray(len).map(function (_, i) { return i + 1; });
+};
+
+// Make and shuffle a counting array
 var makeShuffledArray = function (len) {
   var arr = module.exports.makeCountingArray(len);
   var i; var j; var temp;
@@ -22,11 +56,14 @@ var makeShuffledArray = function (len) {
   return arr;
 };
 
+// Return a random integer from 0 to upper
 var randomUpTo = function (upper) {
-  return Math.floor(Math.random() * (upper + 1));
+  return Math.trunc(Math.random() * (upper + 1));
 };
 
 module.exports = {
+  arraySnapshotToFrameObject: arraySnapshotToFrameObject,
+  makeBlankArray: makeBlankArray,
   makeCountingArray: makeCountingArray,
   makeShuffledArray: makeShuffledArray,
   randomUpTo: randomUpTo,
