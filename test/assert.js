@@ -72,6 +72,13 @@ assert.throws = function (wrapperFunc) {
   }
 };
 
+// Assert typeof argument equals second argument (string)
+assert.type = function (data, type) {
+  var caseInsensitiveType = type.toLowerCase();
+  if (caseInsensitiveType === 'array') assert(Array.isArray(data));
+  else assert.equal(typeof data, caseInsensitiveType);
+};
+
 module.exports = assert;
 
 // Testing for this file (in IFFE's so they can be folded in editor):
@@ -158,4 +165,13 @@ module.exports = assert;
     throw new Error('assert.throws doesn\'t throw error when the argument function doesn\'t throw an error');
   // eslint-disable-next-line no-empty
   } catch (e) { }
+}());
+
+(function () { // assert.type
+  assert.type(42, 'number');
+  assert.type([], 'array');
+  assert.type({}, 'object');
+  assert.type('42', 'string');
+  assert.type('42', 'String');
+  assert.throws(function () { assert.type(42, 'string'); });
 }());
