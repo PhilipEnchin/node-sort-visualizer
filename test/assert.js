@@ -12,6 +12,13 @@ Array.prototype.toString = function () {
   return '[' + arrayToString.call(this) + ']';
 };
 
+// Enable better string renders of objects
+// eslint-disable-next-line no-extend-native
+Object.prototype.toString = function () {
+  var thisObject = this;
+  return '{' + Object.keys(thisObject).map(function (key) { return key + ':' + thisObject[key]; }).join(',') + '}';
+};
+
 // Asserts that both objects/arrays are deeply equal, with arrays allowed to be out of order
 assert.deepEqual = function (a, b) {
   var aKeys;
@@ -80,6 +87,14 @@ module.exports = assert;
   assert.equal([].toString(), '[]');
   assert.equal([1].toString(), '[1]');
   assert.equal([1, 2].toString(), '[1,2]');
+}());
+
+(function () {
+  assert.equal({}.toString(), '{}');
+  assert.equal({ a: 1 }.toString(), '{a:1}');
+  assert.equal({
+    a: 1, b: [2, 3], c: { c: 4, d: 5 }, e: {},
+  }.toString(), '{a:1,b:[2,3],c:{c:4,d:5},e:{}}');
 }());
 
 (function () { // assert.deepEqual
