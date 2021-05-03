@@ -57,4 +57,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Test with node version
-        run: ./node-sorter.tests.bash ${{ matrix.node-version }}
+        run: npm run test

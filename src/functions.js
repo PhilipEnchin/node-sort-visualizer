@@ -4,7 +4,7 @@ var readline = require('readline');
 
 var COLUMN_BLANK = ' ';
 var COLUMN_ELEMENT = '#';
-var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
+// var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
 
 // Process array to make an object that can be used to render a frame
 var arraySnapshotToFrameObject = function (array, a, b) {

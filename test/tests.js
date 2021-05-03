@@ -17,7 +17,7 @@ var lots = 1000;
 
 var COLUMN_BLANK = ' ';
 var COLUMN_ELEMENT = '#';
-var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
+// var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
 
 module.exports = function (addTest, assert) {
   // arraySnapshotToFrameObject
@@ -193,7 +193,7 @@ module.exports = function (addTest, assert) {
     var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
     var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
-    var expectedRow = functions.makeBlankArray(7, COLUMN_BLANK).concat([COLUMN_ELEMENT]);
+    var expectedRow = functions.makeBlankArray(7, COLUMN_BLANK).concat([COLUMN_ELEMENT]).join('');
     stub(process.stdout, 'write');
     stub(readline, 'cursorTo');
     f(frameObject, 8, left, top, snapshot.length, 1);
