@@ -7,6 +7,8 @@
   },
   "scripts": {
     "coverage": "nyc --check-coverage --branches=100 --functions=100 --lines=100 --statements=100 node test/runner.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:meta": "node test/metaTest/",
+    "test:meta:dev": "nodemon test/metaTest/"
   }
 }
