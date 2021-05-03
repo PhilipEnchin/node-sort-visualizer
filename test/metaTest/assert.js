@@ -4,6 +4,7 @@ var assert = require('../assert');
 var stub = require('../stub');
 
 (function () { // assert
+  console.log('assert');
   assert(true); // true
   assert.throws(function () { assert(false); }); // false
   assert.throws(function () { assert(1); }); // truthy
@@ -11,12 +12,14 @@ var stub = require('../stub');
 }());
 
 (function () { // Array.prototype.toString
+  console.log('Array.prototype.toString');
   assert.equal([].toString(), '[]');
   assert.equal([1].toString(), '[1]');
   assert.equal([1, 2].toString(), '[1,2]');
 }());
 
 (function () { // Object.prototype.toString
+  console.log('Object.prototype.toString');
   assert.equal({}.toString(), '{}');
   assert.equal({ a: 1 }.toString(), '{a:1}');
   assert.equal({
@@ -25,11 +28,13 @@ var stub = require('../stub');
 }());
 
 // (function () { // assert.calledWith
+// console.log('assert.calledWith');
 //   var testObject = { testFunction: function () {} };
 //   var stubbed = stub();
 // }());
 
 (function () { // assert.deepEqual
+  console.log('assert.deepEqual');
   assert.deepEqual(1, 1); // Same ===-comparable value
   assert.deepEqual([], []); // Same empty array
   assert.deepEqual([1, 2, 3], [1, 2, 3]); // Same non-empty array
@@ -53,6 +58,7 @@ var stub = require('../stub');
 
 (function () { // assert.equal
   var a = [];
+  console.log('assert.equal');
   assert.equal(1, 1); // Same type, same value
   assert.equal('1', '1'); // Same type, same value
   assert.equal(a, a); // Same array
@@ -63,12 +69,14 @@ var stub = require('../stub');
 }());
 
 (function () { // assert.greaterThan
+  console.log('assert.greaterThan');
   assert.greaterThan(5, 4);
   assert.throws(function () { assert.greaterThan(5, 5); });
   assert.throws(function () { assert.greaterThan(5, 6); });
 }());
 
 (function () { // assert.inRange
+  console.log('assert.inRange');
   assert.inRange(1, 1, 5);
   assert.inRange(3, 1, 5);
   assert.inRange(5, 1, 5);
@@ -77,6 +85,7 @@ var stub = require('../stub');
 }());
 
 (function () { // assert.not
+  console.log('assert.not');
   assert.not(false); // false
   assert.throws(function () { assert.not(true); });// true
   assert.throws(function () { assert.not(0); }); // falsey
@@ -85,6 +94,7 @@ var stub = require('../stub');
 
 (function () { // assert.notEqual
   var a = [];
+  console.log('assert.notEqual');
   assert.throws(function () { assert.notEqual(1, 1); }); // Same type, same value
   assert.throws(function () { assert.notEqual('1', '1'); }); // Same type, same value
   assert.throws(function () { assert.notEqual(a, a); }); // Same array
@@ -95,6 +105,7 @@ var stub = require('../stub');
 }());
 
 (function () { // assert.throws
+  console.log('assert.throws');
   assert.throws(function () { throw new Error('Thrown!'); }); // Throw error (assert.throws catches it)
   try {
     assert.throws(function () { }); // Don't throw error (assert.throws should throw error)
@@ -104,6 +115,7 @@ var stub = require('../stub');
 }());
 
 (function () { // assert.type
+  console.log('assert.type');
   assert.type(42, 'number');
   assert.type([], 'array');
   assert.type({}, 'object');
