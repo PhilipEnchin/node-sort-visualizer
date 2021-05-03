@@ -1,11 +1,23 @@
 'use strict';
 
+var readline = require('readline');
+
+var functions = require('../src/functions');
+var stubFunctions = require('./stub');
+
+var stub = stubFunctions.stub;
+var resetStubs = stubFunctions.resetStubs;
+
 var repeat = function (times, func) {
   var i;
   for (i = 0; i < times; i++) func();
 };
 
 var lots = 1000;
+
+var COLUMN_BLANK = ' ';
+var COLUMN_ELEMENT = '#';
+var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
 
 module.exports = function (addTest, assert) {
   // arraySnapshotToFrameObject
@@ -176,12 +188,41 @@ module.exports = function (addTest, assert) {
     }
   });
 
-  // Show frame
-  // addTest('printFrame', 'Calls console.log exactly once per frame', function (f) {
-  //   var consoleCount = 0;
-  //   stub(console, 'log', function (t) { consoleCount++; });
-  //   f(arr, rows, cols);
-  //   assert.equal(consoleCount, 1);
-  //   unstub(console, 'log');
-  // });
+  // renderGraphRow
+  addTest('renderGraphRow', 'should render top row without scaling', function (f) {
+    var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
+    var left = 12; var top = 34;
+    var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
+    var expectedRow = functions.makeBlankArray(7, COLUMN_BLANK).concat([COLUMN_ELEMENT]);
+    stub(process.stdout, 'write');
+    stub(readline, 'cursorTo');
+    f(frameObject, 8, left, top, snapshot.length, 1);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+    resetStubs();
+  });
+
+  addTest('renderGraphRow', 'should row without at double height', function (f) {
+    var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
+    var left = 12; var top = 34;
+    var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
+    var expectedRow = functions.makeBlankArray(2, COLUMN_BLANK)
+      .concat(functions.makeBlankArray(2, COLUMN_ELEMENT));
+    expectedRow = expectedRow.concat(expectedRow); // Repeat first half
+    expectedRow.push('\n'); // New line for next row
+    expectedRow = expectedRow.concat(expectedRow); // Repeat first row
+    expectedRow.pop(); // Remove new line from end of second row
+    expectedRow = expectedRow.join('');
+    stub(process.stdout, 'write');
+    stub(readline, 'cursorTo');
+    f(frameObject, 5, left, top, snapshot.length, 2);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+    resetStubs();
+  });
+  // TODO: Double height
+  // TODO: Double width
+  // TODO: Missing array elements
+  // TODO: Selected array elements
+  // TODO: Selected array elements from missing elements
 };

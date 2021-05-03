@@ -1,5 +1,11 @@
 'use strict';
 
+var readline = require('readline');
+
+var COLUMN_BLANK = ' ';
+var COLUMN_ELEMENT = '#';
+var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
+
 // Process array to make an object that can be used to render a frame
 var arraySnapshotToFrameObject = function (array, a, b) {
   var attendance = makeBlankArray(array.length, false);
@@ -61,10 +67,29 @@ var randomUpTo = function (upper) {
   return Math.floor(Math.random() * (upper + 1));
 };
 
+// Render a single row to stdout
+var renderGraphRow = function (frameObject, renderMinValue, left, rowTop, width, rowHeight) {
+  var widthMultiplier = width / frameObject.array.length;
+  var i;
+  var rowLayer = frameObject.array.map(function (value, index) {
+    var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
+    return makeBlankArray(columnWidth, renderMinValue <= value ? COLUMN_ELEMENT : COLUMN_BLANK).join('');
+  });
+  var row = rowLayer.slice();
+  for (i = 1; i < rowHeight; i++) {
+    row.push('\n');
+    Array.prototype.push.apply(row, rowLayer);
+  }
+
+  readline.cursorTo(process.stdout, left, rowTop);
+  process.stdout.write(row.join(''));
+};
+
 module.exports = {
   arraySnapshotToFrameObject: arraySnapshotToFrameObject,
   makeBlankArray: makeBlankArray,
   makeCountingArray: makeCountingArray,
   makeShuffledArray: makeShuffledArray,
   randomUpTo: randomUpTo,
+  renderGraphRow: renderGraphRow,
 };

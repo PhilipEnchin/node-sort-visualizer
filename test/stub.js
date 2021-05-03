@@ -6,7 +6,8 @@ var resetStubs = function () {
   while (stubs.length) unstub(stubs[0].obj, stubs[0].funcName);
 };
 
-var stub = function (obj, funcName, replacement) {
+var stub = function (obj, funcName, replacementFunc) {
+  var replacement = replacementFunc || function () {};
   var stubbed = function () {
     stubbed.calls.push(Array.prototype.slice.call(arguments));
     return replacement.apply(obj, arguments);
