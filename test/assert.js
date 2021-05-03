@@ -19,6 +19,13 @@ Object.prototype.toString = function () {
   return '{' + Object.keys(thisObject).map(function (key) { return key + ':' + thisObject[key]; }).join(',') + '}';
 };
 
+// Assert most recent call to the function has the arguments provided
+assert.calledWith = function (func/* , ...args */) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  assert.greaterThan(func.calls.length, 0);
+  assert.deepEqual(func.calls[func.calls.length - 1], args);
+};
+
 // Asserts that both objects/arrays are deeply equal, with arrays allowed to be out of order
 assert.deepEqual = function (a, b) {
   var aKeys;

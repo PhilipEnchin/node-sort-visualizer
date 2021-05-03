@@ -1,7 +1,10 @@
 'use strict';
 
 var assert = require('../assert');
-var stub = require('../stub');
+var stubFunctions = require('../stub');
+
+var stub = stubFunctions.stub;
+var resetStubs = stubFunctions.resetStubs;
 
 (function () { // assert
   console.log('assert');
@@ -27,11 +30,30 @@ var stub = require('../stub');
   }.toString(), '{a:1,b:[2,3],c:{c:4,d:5},e:{}}');
 }());
 
-// (function () { // assert.calledWith
-// console.log('assert.calledWith');
-//   var testObject = { testFunction: function () {} };
-//   var stubbed = stub();
-// }());
+(function () { // assert.calledWith
+  var testObject; var stubbed1; var stubbed2;
+  console.log('assert.calledWith');
+  testObject = { testFunction1: function () {}, testFunction2: function () {} };
+  stubbed1 = stub(testObject, 'testFunction1', function () {});
+  stubbed2 = stub(testObject, 'testFunction2', function () {});
+
+  testObject.testFunction1(1, 2, 3); // call function 1
+  testObject.testFunction2(4, 5, 6); // call function 2
+
+  assert.calledWith(testObject.testFunction1, 1, 2, 3); // Assert on function 1
+  assert.calledWith(stubbed1, 1, 2, 3); // Assert on function 1, returned from stub
+  assert.calledWith(stubbed2, 4, 5, 6); // ...function 2
+
+  stubbed1(); // Call function 1 to override the first call
+  assert.calledWith(stubbed1); // Assert on function 1, with no arguments (second call)
+  assert.calledWith(stubbed2, 4, 5, 6); // Assert on function 2, function 1 didn't override
+
+  assert.throws(function () { assert.calledWith(stubbed1, 1, 2, 3); }); // Original args assertion throws error
+  assert.throws(function () { assert.calledWith(stubbed2, 4, 5, 6, 7); }); // Throws error with extra argument
+  assert.throws(function () { assert.calledWith(stubbed2, 4, 5); }); // Throws error with missing argument
+
+  resetStubs();
+}());
 
 (function () { // assert.deepEqual
   console.log('assert.deepEqual');
