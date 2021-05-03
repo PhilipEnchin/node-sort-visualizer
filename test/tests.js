@@ -202,17 +202,14 @@ module.exports = function (addTest, assert) {
     resetStubs();
   });
 
-  addTest('renderGraphRow', 'should row without at double height', function (f) {
+  addTest('renderGraphRow', 'should render row at double height', function (f) {
     var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
     var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
     var expectedRow = functions.makeBlankArray(2, COLUMN_BLANK)
       .concat(functions.makeBlankArray(2, COLUMN_ELEMENT));
-    expectedRow = expectedRow.concat(expectedRow); // Repeat first half
-    expectedRow.push('\n'); // New line for next row
-    expectedRow = expectedRow.concat(expectedRow); // Repeat first row
-    expectedRow.pop(); // Remove new line from end of second row
-    expectedRow = expectedRow.join('');
+    expectedRow = expectedRow.concat(expectedRow).join(''); // Repeat first half
+    expectedRow = expectedRow + '\n' + expectedRow; // New line for next row
     stub(process.stdout, 'write');
     stub(readline, 'cursorTo');
     f(frameObject, 5, left, top, snapshot.length, 2);
@@ -220,7 +217,20 @@ module.exports = function (addTest, assert) {
     assert.calledWith(process.stdout.write, expectedRow);
     resetStubs();
   });
-  // TODO: Double height
+
+  addTest('renderGraphRow', 'should render row at double width', function (f) {
+    var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
+    var left = 12; var top = 34;
+    var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
+    var expectedRow = functions.makeBlankArray(2, COLUMN_BLANK).concat(functions.makeBlankArray(6, COLUMN_ELEMENT)).join('');
+    expectedRow += expectedRow;
+    stub(process.stdout, 'write');
+    stub(readline, 'cursorTo');
+    f(frameObject, 3, left, top, snapshot.length * 2, 1);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+    resetStubs();
+  });
   // TODO: Double width
   // TODO: Missing array elements
   // TODO: Selected array elements
