@@ -15,6 +15,9 @@ var repeat = function (times, func) {
 
 var lots = 1000;
 
+var BORDER_LEFT = '|| ';
+var BORDER_MID = ' | ';
+var BORDER_RIGHT = ' ||';
 var COLUMN_BLANK = ' ';
 var COLUMN_ELEMENT = '#';
 // var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
@@ -194,6 +197,7 @@ module.exports = function (addTest, assert) {
     var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
     var expectedRow = functions.makeBlankArray(7, COLUMN_BLANK).concat([COLUMN_ELEMENT]).join('');
+    expectedRow = BORDER_LEFT + expectedRow + BORDER_MID + BORDER_RIGHT;
     stub(process.stdout, 'write');
     stub(readline, 'cursorTo');
     f(frameObject, 8, left, top, snapshot.length, 1);
@@ -208,7 +212,7 @@ module.exports = function (addTest, assert) {
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
     var expectedRow = functions.makeBlankArray(2, COLUMN_BLANK)
       .concat(functions.makeBlankArray(2, COLUMN_ELEMENT));
-    expectedRow = expectedRow.concat(expectedRow).join(''); // Repeat first half
+    expectedRow = BORDER_LEFT + expectedRow.concat(expectedRow).join('') + BORDER_MID + BORDER_RIGHT; // Repeat first half
     expectedRow = expectedRow + '\n' + expectedRow; // New line for next row
     stub(process.stdout, 'write');
     stub(readline, 'cursorTo');
@@ -224,6 +228,7 @@ module.exports = function (addTest, assert) {
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
     var expectedRow = functions.makeBlankArray(2, COLUMN_BLANK).concat(functions.makeBlankArray(6, COLUMN_ELEMENT)).join('');
     expectedRow += expectedRow;
+    expectedRow = BORDER_LEFT + expectedRow + BORDER_MID + BORDER_RIGHT;
     stub(process.stdout, 'write');
     stub(readline, 'cursorTo');
     f(frameObject, 3, left, top, snapshot.length * 2, 1);
@@ -231,8 +236,29 @@ module.exports = function (addTest, assert) {
     assert.calledWith(process.stdout.write, expectedRow);
     resetStubs();
   });
-  // TODO: Double width
-  // TODO: Missing array elements
+  addTest('renderGraphRow', 'should render row with separator and missing elements', function (f) {
+    var snapshot = [8, 7, 6, 5, 5, 3, 2, 1];
+    var left = 12; var top = 34;
+    var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
+
+    var expectedRow = BORDER_LEFT + functions.makeBlankArray(9, COLUMN_ELEMENT).concat(functions.makeBlankArray(15, COLUMN_BLANK)).join('');
+    expectedRow += BORDER_MID + functions.makeBlankArray(3, COLUMN_BLANK).join('') + BORDER_RIGHT;
+    expectedRow += '\n' + expectedRow;
+    stub(process.stdout, 'write');
+    stub(readline, 'cursorTo');
+    f(frameObject, 6, left, top, snapshot.length * 3, 2);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+
+    expectedRow = BORDER_LEFT + functions.makeBlankArray(15, COLUMN_ELEMENT).concat(functions.makeBlankArray(9, COLUMN_BLANK)).join('');
+    expectedRow += BORDER_MID + functions.makeBlankArray(3, COLUMN_ELEMENT).join('') + BORDER_RIGHT;
+    expectedRow += '\n' + expectedRow;
+    f(frameObject, 4, left, top, snapshot.length * 3, 2);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+
+    resetStubs();
+  });
   // TODO: Selected array elements
   // TODO: Selected array elements from missing elements
 };

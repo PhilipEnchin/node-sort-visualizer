@@ -2,6 +2,9 @@
 
 var readline = require('readline');
 
+var BORDER_LEFT = '|| ';
+var BORDER_MID = ' | ';
+var BORDER_RIGHT = ' ||';
 var COLUMN_BLANK = ' ';
 var COLUMN_ELEMENT = '#';
 // var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
@@ -70,12 +73,18 @@ var randomUpTo = function (upper) {
 // Render a single row to stdout
 var renderGraphRow = function (frameObject, renderMinValue, left, rowTop, width, rowHeight) {
   var widthMultiplier = width / frameObject.array.length;
-  var i;
-  var rowLayer = frameObject.array.map(function (value, index) {
+  var i; var row;
+  var rowLayer = [BORDER_LEFT].concat(frameObject.array.map(function (value, index) {
     var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
     return makeBlankArray(columnWidth, renderMinValue <= value ? COLUMN_ELEMENT : COLUMN_BLANK).join('');
-  });
-  var row = rowLayer.slice();
+  }));
+  rowLayer.push(BORDER_MID);
+  rowLayer = rowLayer.concat(frameObject.extraData.array.map(function (value, index) {
+    var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
+    return makeBlankArray(columnWidth, renderMinValue <= value ? COLUMN_ELEMENT : COLUMN_BLANK).join('');
+  }));
+  rowLayer.push(BORDER_RIGHT);
+  row = rowLayer.slice();
   for (i = 1; i < rowHeight; i++) {
     row.push('\n');
     Array.prototype.push.apply(row, rowLayer);
