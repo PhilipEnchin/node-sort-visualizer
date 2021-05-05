@@ -301,4 +301,27 @@ module.exports = function (addTest, assert) {
 
     resetStubs();
   });
+
+  addTest('renderGraph', 'should call renderGraphRow a bunch', function (f) {
+    var snapshot = [1, 2, 4, 8, 7, 5, 3, 6];
+    var left = 1; var top = 10; var rowWidth = 2; var rowHeight = 3; var renderMin = 8;
+    var frameObject = functions.arraySnapshotToFrameObject(snapshot, 2, 5);
+
+    stub(functions, 'renderGraphRow', function (frameObjectArg, renderMinValue, leftArg, topArg, widthArg, heightArg) {
+      assert.equal(frameObjectArg, frameObject);
+      assert.equal(renderMinValue, renderMin--);
+      assert.equal(leftArg, left);
+      assert.equal(topArg, top);
+      assert.equal(widthArg, rowWidth);
+      assert.equal(heightArg, rowHeight);
+      top += rowHeight;
+    });
+    stub(process.stdout, 'write');
+    stub(readline, readline.cursorTo);
+
+    f(frameObject, left, top, rowWidth, rowHeight);
+    assert.calledNTimes(functions.renderGraphRow, 8);
+
+    resetStubs();
+  });
 };

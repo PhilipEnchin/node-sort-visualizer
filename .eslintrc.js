@@ -14,5 +14,6 @@ module.exports = {
     'no-plusplus': 'off',
     'no-return-assign': 'off',
     'no-use-before-define': ['error', { functions: false, variables: false }],
+    yoda: 'off',
   },
 };

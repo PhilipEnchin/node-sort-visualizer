@@ -9,9 +9,11 @@ var COLUMN_BLANK = ' ';
 var COLUMN_ELEMENT = '#';
 var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
 
+var functions = {};
+
 // Process array to make an object that can be used to render a frame
-var arraySnapshotToFrameObject = function (array, a, b) {
-  var attendance = makeBlankArray(array.length, false);
+functions.arraySnapshotToFrameObject = function (array, a, b) {
+  var attendance = functions.makeBlankArray(array.length, false);
   var missingValues = [];
   var comparingIndices = [];
   var extraComparingIndices = [];
@@ -39,7 +41,7 @@ var arraySnapshotToFrameObject = function (array, a, b) {
   };
 };
 
-var makeBlankArray = function (len, defaultValue) {
+functions.makeBlankArray = function (len, defaultValue) {
   var arr = Array(len);
   var i;
   var value = arguments.length < 2 ? null : defaultValue;
@@ -48,12 +50,12 @@ var makeBlankArray = function (len, defaultValue) {
 };
 
 // Make array of length n like this: [1, 2, ..., n - 1, n]
-var makeCountingArray = function (len) {
-  return makeBlankArray(len).map(function (_, i) { return i + 1; });
+functions.makeCountingArray = function (len) {
+  return functions.makeBlankArray(len).map(function (_, i) { return i + 1; });
 };
 
 // Make and shuffle a counting array
-var makeShuffledArray = function (len) {
+functions.makeShuffledArray = function (len) {
   var arr = module.exports.makeCountingArray(len);
   var i; var j; var temp;
   for (i = 1; i < len; i++) {
@@ -66,16 +68,16 @@ var makeShuffledArray = function (len) {
 };
 
 // Return a random integer from 0 to upper
-var randomUpTo = function (upper) {
+functions.randomUpTo = function (upper) {
   return Math.floor(Math.random() * (upper + 1));
 };
 
 // Render a single row to stdout
-var renderGraphRow = function (frameObject, renderMinValue, left, rowTop, width, rowHeight) {
+functions.renderGraphRow = function (frameObject, renderMinValue, left, rowTop, width, rowHeight) {
   var rowLayerColumns = function (array, selected) {
     return array.map(function (value, index) {
       var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
-      return makeBlankArray(columnWidth, renderMinValue <= value ? (~selected.indexOf(index) ? COLUMN_SELECTED : COLUMN_ELEMENT) : COLUMN_BLANK).join('');
+      return functions.makeBlankArray(columnWidth, renderMinValue <= value ? (~selected.indexOf(index) ? COLUMN_SELECTED : COLUMN_ELEMENT) : COLUMN_BLANK).join('');
     }).join('');
   };
   var widthMultiplier = width / frameObject.array.length;
@@ -89,11 +91,13 @@ var renderGraphRow = function (frameObject, renderMinValue, left, rowTop, width,
   process.stdout.write(row);
 };
 
-module.exports = {
-  arraySnapshotToFrameObject: arraySnapshotToFrameObject,
-  makeBlankArray: makeBlankArray,
-  makeCountingArray: makeCountingArray,
-  makeShuffledArray: makeShuffledArray,
-  randomUpTo: randomUpTo,
-  renderGraphRow: renderGraphRow,
+functions.renderGraph = function (frameObject, left, top, rowWidth, rowHeight) {
+  var rowTop = top - rowHeight;
+  var i;
+
+  for (i = frameObject.array.length; 0 < i; i--) {
+    functions.renderGraphRow(frameObject, i, left, rowTop += rowHeight, rowWidth, rowHeight);
+  }
 };
+
+module.exports = functions;
