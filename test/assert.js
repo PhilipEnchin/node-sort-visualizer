@@ -19,6 +19,9 @@ Object.prototype.toString = function () {
   return '{' + Object.keys(thisObject).map(function (key) { return key + ':' + thisObject[key]; }).join(',') + '}';
 };
 
+// Assert stub function has been called exactly n times
+assert.calledNTimes = function (func, n) { assert.equal(func.calls.length, n); };
+
 // Assert most recent call to the function has the arguments provided
 assert.calledWith = function (func/* , ...args */) {
   var args = Array.prototype.slice.call(arguments, 1);

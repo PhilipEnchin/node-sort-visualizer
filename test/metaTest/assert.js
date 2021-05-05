@@ -30,6 +30,35 @@ var resetStubs = stubFunctions.resetStubs;
   }.toString(), '{a:1,b:[2,3],c:{c:4,d:5},e:{}}');
 }());
 
+(function () { // assert.calledNTimes
+  var testObject; var stubbed1; var stubbed2;
+  console.log('assert.calledNTimes');
+  testObject = { testFunction1: function () {}, testFunction2: function () {} };
+  stubbed1 = stub(testObject, 'testFunction1', function () {});
+  stubbed2 = stub(testObject, 'testFunction2', function () {});
+
+  assert.calledNTimes(testObject.testFunction1, 0);
+  assert.calledNTimes(testObject.testFunction2, 0);
+
+  testObject.testFunction1();
+  stubbed1(); stubbed1();
+  assert.calledNTimes(testObject.testFunction1, 3);
+  assert.calledNTimes(stubbed1, 3);
+  assert.calledNTimes(testObject.testFunction2, 0);
+
+  testObject.testFunction2(); testObject.testFunction2(); testObject.testFunction2();
+  stubbed2(); stubbed2(); stubbed2(); stubbed2(); stubbed2(); stubbed2(); stubbed2();
+  assert.calledNTimes(testObject.testFunction2, 10);
+  assert.calledNTimes(stubbed2, 10);
+
+  assert.calledNTimes(stubbed1, 3);
+
+  assert.throws(function () { assert.calledNTimes(testObject.testFunction1, 10); });
+  assert.throws(function () { assert.calledNTimes(stubbed1, 10); });
+  assert.throws(function () { assert.calledNTimes(testObject.testFunction2, 3); });
+  assert.throws(function () { assert.calledNTimes(stubbed2, 3); });
+}());
+
 (function () { // assert.calledWith
   var testObject; var stubbed1; var stubbed2;
   console.log('assert.calledWith');
