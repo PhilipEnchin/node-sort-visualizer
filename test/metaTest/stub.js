@@ -17,6 +17,12 @@ var checkTestFunctionCallCountIncrementBy = function (increment) {
 var callOriginalTestFunction = function () { testObject.testFunction1(); checkTestFunctionCallCountIncrementBy(0); };
 var callStub = function () { testObject.testFunction1(); checkTestFunctionCallCountIncrementBy(1); };
 
+var consoleLog = console.log;
+consoleLog('stub');
+console.log = function (msg) {
+  consoleLog('  ' + msg);
+};
+
 (function () { // resetStubs
   console.log('resetStubs');
   callOriginalTestFunction(); // Verify original function call
@@ -91,3 +97,5 @@ var callStub = function () { testObject.testFunction1(); checkTestFunctionCallCo
   assert.deepEqual(stubbedFunction.calls, [[1, 2, 3], [4, 5, 6], [], [[]]]);
   resetStubs();
 }());
+
+console.log = consoleLog;

@@ -6,6 +6,12 @@ var stubFunctions = require('../stub');
 var stub = stubFunctions.stub;
 var resetStubs = stubFunctions.resetStubs;
 
+var consoleLog = console.log;
+consoleLog('assert');
+console.log = function (msg) {
+  consoleLog('  ' + msg);
+};
+
 (function () { // assert
   console.log('assert');
   assert(true); // true
@@ -174,3 +180,5 @@ var resetStubs = stubFunctions.resetStubs;
   assert.type('42', 'String');
   assert.throws(function () { assert.type(42, 'string'); });
 }());
+
+console.log = consoleLog;
