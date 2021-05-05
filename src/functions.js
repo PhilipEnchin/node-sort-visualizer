@@ -7,7 +7,7 @@ var BORDER_MID = ' | ';
 var BORDER_RIGHT = ' ||';
 var COLUMN_BLANK = ' ';
 var COLUMN_ELEMENT = '#';
-// var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
+var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
 
 // Process array to make an object that can be used to render a frame
 var arraySnapshotToFrameObject = function (array, a, b) {
@@ -72,26 +72,21 @@ var randomUpTo = function (upper) {
 
 // Render a single row to stdout
 var renderGraphRow = function (frameObject, renderMinValue, left, rowTop, width, rowHeight) {
+  var rowLayerColumns = function (array, selected) {
+    return array.map(function (value, index) {
+      var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
+      return makeBlankArray(columnWidth, renderMinValue <= value ? (~selected.indexOf(index) ? COLUMN_SELECTED : COLUMN_ELEMENT) : COLUMN_BLANK).join('');
+    }).join('');
+  };
   var widthMultiplier = width / frameObject.array.length;
   var i; var row;
-  var rowLayer = [BORDER_LEFT].concat(frameObject.array.map(function (value, index) {
-    var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
-    return makeBlankArray(columnWidth, renderMinValue <= value ? COLUMN_ELEMENT : COLUMN_BLANK).join('');
-  }));
-  rowLayer.push(BORDER_MID);
-  rowLayer = rowLayer.concat(frameObject.extraData.array.map(function (value, index) {
-    var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
-    return makeBlankArray(columnWidth, renderMinValue <= value ? COLUMN_ELEMENT : COLUMN_BLANK).join('');
-  }));
-  rowLayer.push(BORDER_RIGHT);
-  row = rowLayer.slice();
-  for (i = 1; i < rowHeight; i++) {
-    row.push('\n');
-    Array.prototype.push.apply(row, rowLayer);
-  }
+  var rowLayer = BORDER_LEFT + rowLayerColumns(frameObject.array, frameObject.comparingIndices) + BORDER_MID + rowLayerColumns(frameObject.extraData.array, frameObject.extraData.comparingIndices) + BORDER_RIGHT;
+
+  row = rowLayer;
+  for (i = 1; i < rowHeight; i++) row += '\n' + rowLayer;
 
   readline.cursorTo(process.stdout, left, rowTop);
-  process.stdout.write(row.join(''));
+  process.stdout.write(row);
 };
 
 module.exports = {

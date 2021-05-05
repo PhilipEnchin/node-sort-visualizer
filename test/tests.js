@@ -20,7 +20,7 @@ var BORDER_MID = ' | ';
 var BORDER_RIGHT = ' ||';
 var COLUMN_BLANK = ' ';
 var COLUMN_ELEMENT = '#';
-// var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
+var COLUMN_SELECTED = '\x1b[36m\x1b[1m#\x1b[0m';
 
 module.exports = function (addTest, assert) {
   // arraySnapshotToFrameObject
@@ -236,6 +236,7 @@ module.exports = function (addTest, assert) {
     assert.calledWith(process.stdout.write, expectedRow);
     resetStubs();
   });
+
   addTest('renderGraphRow', 'should render row with separator and missing elements', function (f) {
     var snapshot = [8, 7, 6, 5, 5, 3, 2, 1];
     var left = 12; var top = 34;
@@ -259,6 +260,45 @@ module.exports = function (addTest, assert) {
 
     resetStubs();
   });
-  // TODO: Selected array elements
-  // TODO: Selected array elements from missing elements
+
+  addTest('renderGraphRow', 'should render row with selected elements', function (f) {
+    var snapshot = [1, 2, 3, 4, 5, 6, 7, 8];
+    var left = 12; var top = 34;
+    var frameObject = functions.arraySnapshotToFrameObject(snapshot, 3, 7);
+
+    var expectedRow = BORDER_LEFT + functions.makeBlankArray(4, COLUMN_BLANK).join('') + functions.makeBlankArray(2, COLUMN_ELEMENT).join('') + COLUMN_SELECTED + COLUMN_ELEMENT + BORDER_MID + BORDER_RIGHT;
+    stub(process.stdout, 'write');
+    stub(readline, 'cursorTo');
+    f(frameObject, 5, left, top, snapshot.length, 1);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+
+    expectedRow = BORDER_LEFT + functions.makeBlankArray(2, COLUMN_BLANK).join('') + COLUMN_SELECTED + functions.makeBlankArray(3, COLUMN_ELEMENT).join('') + COLUMN_SELECTED + COLUMN_ELEMENT + BORDER_MID + BORDER_RIGHT;
+    f(frameObject, 3, left, top, snapshot.length, 1);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+
+    resetStubs();
+  });
+
+  addTest('renderGraphRow', 'should render row with selected missing elements', function (f) {
+    var snapshot = [1, 2, 3, 3, 5, 5, 7, 8];
+    var left = 12; var top = 34;
+    var frameObject = functions.arraySnapshotToFrameObject(snapshot, 5, 6);
+
+    var expectedRow = BORDER_LEFT + functions.makeBlankArray(4, COLUMN_ELEMENT).join('') + COLUMN_SELECTED + COLUMN_SELECTED + COLUMN_ELEMENT + COLUMN_ELEMENT + BORDER_MID + COLUMN_ELEMENT + COLUMN_SELECTED + BORDER_RIGHT;
+    stub(process.stdout, 'write');
+    stub(readline, 'cursorTo');
+    f(frameObject, 1, left, top, snapshot.length, 1);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+
+    frameObject = functions.arraySnapshotToFrameObject(snapshot, 4, 6);
+    expectedRow = BORDER_LEFT + functions.makeBlankArray(8, COLUMN_ELEMENT).join('') + BORDER_MID + COLUMN_SELECTED + COLUMN_SELECTED + BORDER_RIGHT;
+    f(frameObject, 1, left, top, snapshot.length, 1);
+    assert.calledWith(readline.cursorTo, process.stdout, left, top);
+    assert.calledWith(process.stdout.write, expectedRow);
+
+    resetStubs();
+  });
 };
