@@ -10,7 +10,7 @@ var stub = function (obj, key, replacementValue) {
   var stubbed;
   if (!(key in obj)) { throw new Error('Key "' + key + '" not found on object'); }
   if (typeof obj[key] === 'function') {
-    if (typeof replacementValue !== 'function') { throw new Error('A stubbed function must be relpaced with another function'); }
+    if (arguments.length >= 3 && typeof replacementValue !== 'function') { throw new Error('A stubbed function must be relpaced with another function'); }
     stubbed = function () {
       stubbed.calls.push(Array.prototype.slice.call(arguments));
       return (replacementValue || function () {}).apply(obj, arguments);

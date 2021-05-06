@@ -317,7 +317,7 @@ module.exports = function (addTest, assert) {
       top += rowHeight;
     });
     stub(process.stdout, 'write');
-    stub(readline, readline.cursorTo);
+    stub(readline, 'cursorTo');
 
     f(frameObject, left, top, rowWidth, rowHeight);
     assert.calledNTimes(functions.renderGraphRow, 8);
