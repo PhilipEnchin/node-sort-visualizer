@@ -8,7 +8,12 @@ var stub = stubFunctions.stub;
 var stubsCount = stubFunctions.stubsCount;
 var unstub = stubFunctions.unstub;
 
-var testObject = { testFunction1: function () {}, testFunction2: function () {} }; var replacementFunction = function () { testFunctionCallCount++; };
+var testObject = {
+  testFunction1: function () {},
+  testFunction2: function () {},
+  testValue: 'original value',
+};
+var replacementFunction = function () { testFunctionCallCount++; };
 var previousTestFunctionCallCount = 0; var testFunctionCallCount = 0; var stubbedFunction;
 var checkTestFunctionCallCountIncrementBy = function (increment) {
   assert.equal(previousTestFunctionCallCount + increment, testFunctionCallCount);
@@ -40,6 +45,18 @@ console.log = function (msg) {
   resetStubs();
   assert.equal(stubsCount(), 0); // Verify stub count
   callOriginalTestFunction(); // Verify function 1 is unstubbed
+
+  assert.equal(testObject.testValue, 'original value');
+  stub(testObject, 'testValue', 'stubbed value');
+  assert.equal(testObject.testValue, 'stubbed value');
+  // eslint-disable-next-line no-unused-expressions
+  assert.throws(function () { 'calls' in testObject.testValue; });
+  resetStubs();
+  assert.equal(testObject.testValue, 'original value');
+
+  assert.throws(function () { stub(testObject, 'testValue'); });
+  assert.throws(function () { stub(testObject, 'non existent key', 42); });
+  assert.equal(stubsCount(), 0);
 }());
 
 (function () { // stub
