@@ -1,5 +1,7 @@
 'use strict';
 
+var readline = require('readline');
+
 var functions = require('../src/functions');
 var stubFunctions = require('./stub');
 
@@ -189,6 +191,36 @@ module.exports = function (addTest, assert) {
     }
   });
 
+  // renderToTerminal
+  addTest('renderToTerminal', 'should render string to terminal given top left position', function (f) {
+    var stringArray = [
+      '1234567890',
+      'qwertyuiop',
+      'asdfghjkl',
+      'zxcvbnm',
+    ];
+    var string = stringArray.join('\n');
+    var left = 12; var top = 34;
+    var i = 0;
+
+    stub(readline, 'cursorTo', function (stream, leftArg, topArg) {
+      assert.equal(stream, process.stdout);
+      assert.equal(leftArg, left);
+      assert.equal(topArg, top + i);
+    });
+
+    stub(process.stdout, 'write', function (row) {
+      assert.equal(row, stringArray[i++]);
+    });
+
+    f(string, left, top);
+
+    assert.calledNTimes(readline.cursorTo, 4);
+    assert.calledNTimes(process.stdout.write, 4);
+
+    resetStubs();
+  });
+
   // stringifyGraphRow
   addTest('stringifyGraphRow', 'should render top row without scaling', function (f) {
     var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
@@ -273,6 +305,7 @@ module.exports = function (addTest, assert) {
     assert.equal(actualRow, expectedRow);
   });
 
+  // stringifyGraph
   addTest('stringifyGraph', 'should call stringifyGraphRow a bunch', function (f) {
     var snapshot = [1, 2, 4, 8, 7, 5, 3, 6];
     var rowWidth = 2; var rowHeight = 3; var renderMin = 8;

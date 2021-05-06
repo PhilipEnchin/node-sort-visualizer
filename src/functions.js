@@ -1,5 +1,7 @@
 'use strict';
 
+var readline = require('readline');
+
 var BORDER_LEFT = '|| ';
 var BORDER_MID = ' | ';
 var BORDER_RIGHT = ' ||';
@@ -79,6 +81,14 @@ functions.stringifyGraph = function (frameObject, rowWidth, rowHeight) {
     result.push(functions.stringifyGraphRow(frameObject, i, rowWidth, rowHeight));
   }
   return result.join('\n');
+};
+
+// Render string to terminal, given string and top-left position
+functions.renderToTerminal = function (string, left, top) {
+  string.split('\n').forEach(function (row, rowIndex) {
+    readline.cursorTo(process.stdout, left, top + rowIndex);
+    process.stdout.write(row);
+  });
 };
 
 // Generate a single graph row string
