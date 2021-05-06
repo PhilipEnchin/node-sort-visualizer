@@ -1,7 +1,5 @@
 'use strict';
 
-var readline = require('readline');
-
 var functions = require('../src/functions');
 var stubFunctions = require('./stub');
 
@@ -191,137 +189,108 @@ module.exports = function (addTest, assert) {
     }
   });
 
-  // renderGraphRow
-  addTest('renderGraphRow', 'should render top row without scaling', function (f) {
+  // stringifyGraphRow
+  addTest('stringifyGraphRow', 'should render top row without scaling', function (f) {
     var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
-    var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
     var expectedRow = functions.makeBlankArray(7, COLUMN_BLANK).concat([COLUMN_ELEMENT]).join('');
     expectedRow = BORDER_LEFT + expectedRow + BORDER_MID + BORDER_RIGHT;
-    stub(process.stdout, 'write');
-    stub(readline, 'cursorTo');
-    f(frameObject, 8, left, top, snapshot.length, 1);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
-    resetStubs();
+
+    assert.equal(f(frameObject, 8, snapshot.length, 1), expectedRow);
   });
 
-  addTest('renderGraphRow', 'should render row at double height', function (f) {
+  addTest('stringifyGraphRow', 'should render row at double height', function (f) {
     var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
-    var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
     var expectedRow = functions.makeBlankArray(2, COLUMN_BLANK)
       .concat(functions.makeBlankArray(2, COLUMN_ELEMENT));
     expectedRow = BORDER_LEFT + expectedRow.concat(expectedRow).join('') + BORDER_MID + BORDER_RIGHT; // Repeat first half
     expectedRow = expectedRow + '\n' + expectedRow; // New line for next row
-    stub(process.stdout, 'write');
-    stub(readline, 'cursorTo');
-    f(frameObject, 5, left, top, snapshot.length, 2);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
-    resetStubs();
+
+    assert.equal(f(frameObject, 5, snapshot.length, 2), expectedRow);
   });
 
-  addTest('renderGraphRow', 'should render row at double width', function (f) {
+  addTest('stringifyGraphRow', 'should render row at double width', function (f) {
     var snapshot = [1, 3, 5, 7, 2, 4, 6, 8];
-    var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
     var expectedRow = functions.makeBlankArray(2, COLUMN_BLANK).concat(functions.makeBlankArray(6, COLUMN_ELEMENT)).join('');
     expectedRow += expectedRow;
     expectedRow = BORDER_LEFT + expectedRow + BORDER_MID + BORDER_RIGHT;
-    stub(process.stdout, 'write');
-    stub(readline, 'cursorTo');
-    f(frameObject, 3, left, top, snapshot.length * 2, 1);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
-    resetStubs();
+
+    assert.equal(f(frameObject, 3, snapshot.length * 2, 1), expectedRow);
   });
 
-  addTest('renderGraphRow', 'should render row with separator and missing elements', function (f) {
+  addTest('stringifyGraphRow', 'should render row with separator and missing elements', function (f) {
     var snapshot = [8, 7, 6, 5, 5, 3, 2, 1];
-    var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 1, 2);
 
+    var actualRow;
     var expectedRow = BORDER_LEFT + functions.makeBlankArray(9, COLUMN_ELEMENT).concat(functions.makeBlankArray(15, COLUMN_BLANK)).join('');
     expectedRow += BORDER_MID + functions.makeBlankArray(3, COLUMN_BLANK).join('') + BORDER_RIGHT;
     expectedRow += '\n' + expectedRow;
-    stub(process.stdout, 'write');
-    stub(readline, 'cursorTo');
-    f(frameObject, 6, left, top, snapshot.length * 3, 2);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
+    actualRow = f(frameObject, 6, snapshot.length * 3, 2);
+
+    assert.equal(actualRow, expectedRow);
 
     expectedRow = BORDER_LEFT + functions.makeBlankArray(15, COLUMN_ELEMENT).concat(functions.makeBlankArray(9, COLUMN_BLANK)).join('');
     expectedRow += BORDER_MID + functions.makeBlankArray(3, COLUMN_ELEMENT).join('') + BORDER_RIGHT;
     expectedRow += '\n' + expectedRow;
-    f(frameObject, 4, left, top, snapshot.length * 3, 2);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
+    actualRow = f(frameObject, 4, snapshot.length * 3, 2);
 
-    resetStubs();
+    assert.equal(actualRow, expectedRow);
   });
 
-  addTest('renderGraphRow', 'should render row with selected elements', function (f) {
+  addTest('stringifyGraphRow', 'should render row with selected elements', function (f) {
     var snapshot = [1, 2, 3, 4, 5, 6, 7, 8];
-    var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 3, 7);
 
+    var actualRow;
     var expectedRow = BORDER_LEFT + functions.makeBlankArray(4, COLUMN_BLANK).join('') + functions.makeBlankArray(2, COLUMN_ELEMENT).join('') + COLUMN_SELECTED + COLUMN_ELEMENT + BORDER_MID + BORDER_RIGHT;
-    stub(process.stdout, 'write');
-    stub(readline, 'cursorTo');
-    f(frameObject, 5, left, top, snapshot.length, 1);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
+    actualRow = f(frameObject, 5, snapshot.length, 1);
+
+    assert.equal(actualRow, expectedRow);
 
     expectedRow = BORDER_LEFT + functions.makeBlankArray(2, COLUMN_BLANK).join('') + COLUMN_SELECTED + functions.makeBlankArray(3, COLUMN_ELEMENT).join('') + COLUMN_SELECTED + COLUMN_ELEMENT + BORDER_MID + BORDER_RIGHT;
-    f(frameObject, 3, left, top, snapshot.length, 1);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
+    actualRow = f(frameObject, 3, snapshot.length, 1);
 
-    resetStubs();
+    assert.equal(actualRow, expectedRow);
   });
 
-  addTest('renderGraphRow', 'should render row with selected missing elements', function (f) {
+  addTest('stringifyGraphRow', 'should render row with selected missing elements', function (f) {
     var snapshot = [1, 2, 3, 3, 5, 5, 7, 8];
-    var left = 12; var top = 34;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 5, 6);
 
+    var actualRow;
     var expectedRow = BORDER_LEFT + functions.makeBlankArray(4, COLUMN_ELEMENT).join('') + COLUMN_SELECTED + COLUMN_SELECTED + COLUMN_ELEMENT + COLUMN_ELEMENT + BORDER_MID + COLUMN_ELEMENT + COLUMN_SELECTED + BORDER_RIGHT;
-    stub(process.stdout, 'write');
-    stub(readline, 'cursorTo');
-    f(frameObject, 1, left, top, snapshot.length, 1);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
+    actualRow = f(frameObject, 1, snapshot.length, 1);
+
+    assert.equal(actualRow, expectedRow);
 
     frameObject = functions.arraySnapshotToFrameObject(snapshot, 4, 6);
     expectedRow = BORDER_LEFT + functions.makeBlankArray(8, COLUMN_ELEMENT).join('') + BORDER_MID + COLUMN_SELECTED + COLUMN_SELECTED + BORDER_RIGHT;
-    f(frameObject, 1, left, top, snapshot.length, 1);
-    assert.calledWith(readline.cursorTo, process.stdout, left, top);
-    assert.calledWith(process.stdout.write, expectedRow);
+    actualRow = f(frameObject, 1, snapshot.length, 1);
 
-    resetStubs();
+    assert.equal(actualRow, expectedRow);
   });
 
-  addTest('renderGraph', 'should call renderGraphRow a bunch', function (f) {
+  addTest('stringifyGraph', 'should call stringifyGraphRow a bunch', function (f) {
     var snapshot = [1, 2, 4, 8, 7, 5, 3, 6];
-    var left = 1; var top = 10; var rowWidth = 2; var rowHeight = 3; var renderMin = 8;
+    var rowWidth = 2; var rowHeight = 3; var renderMin = 8;
     var frameObject = functions.arraySnapshotToFrameObject(snapshot, 2, 5);
+    var expectedGraph = [8, 7, 6, 5, 4, 3, 2, 1].join('\n');
+    var graph;
 
-    stub(functions, 'renderGraphRow', function (frameObjectArg, renderMinValue, leftArg, topArg, widthArg, heightArg) {
+    stub(functions, 'stringifyGraphRow', function (frameObjectArg, renderMinValue, widthArg, heightArg) {
       assert.equal(frameObjectArg, frameObject);
       assert.equal(renderMinValue, renderMin--);
-      assert.equal(leftArg, left);
-      assert.equal(topArg, top);
       assert.equal(widthArg, rowWidth);
       assert.equal(heightArg, rowHeight);
-      top += rowHeight;
+      return renderMinValue;
     });
-    stub(process.stdout, 'write');
-    stub(readline, 'cursorTo');
 
-    f(frameObject, left, top, rowWidth, rowHeight);
-    assert.calledNTimes(functions.renderGraphRow, 8);
-
+    graph = f(frameObject, rowWidth, rowHeight);
+    assert.calledNTimes(functions.stringifyGraphRow, 8);
     resetStubs();
+    assert.equal(graph, expectedGraph);
   });
 };

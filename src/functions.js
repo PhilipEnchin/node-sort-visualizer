@@ -1,7 +1,5 @@
 'use strict';
 
-var readline = require('readline');
-
 var BORDER_LEFT = '|| ';
 var BORDER_MID = ' | ';
 var BORDER_RIGHT = ' ||';
@@ -72,8 +70,19 @@ functions.randomUpTo = function (upper) {
   return Math.floor(Math.random() * (upper + 1));
 };
 
-// Render a single row to stdout
-functions.renderGraphRow = function (frameObject, renderMinValue, left, rowTop, width, rowHeight) {
+// Generate an entire graph string
+functions.stringifyGraph = function (frameObject, rowWidth, rowHeight) {
+  var i;
+
+  var result = [];
+  for (i = frameObject.array.length; 0 < i; i--) {
+    result.push(functions.stringifyGraphRow(frameObject, i, rowWidth, rowHeight));
+  }
+  return result.join('\n');
+};
+
+// Generate a single graph row string
+functions.stringifyGraphRow = function (frameObject, renderMinValue, width, rowHeight) {
   var rowLayerColumns = function (array, selected) {
     return array.map(function (value, index) {
       var columnWidth = Math.round(widthMultiplier * (index + 1)) - Math.round(widthMultiplier * index);
@@ -87,17 +96,7 @@ functions.renderGraphRow = function (frameObject, renderMinValue, left, rowTop, 
   row = rowLayer;
   for (i = 1; i < rowHeight; i++) row += '\n' + rowLayer;
 
-  readline.cursorTo(process.stdout, left, rowTop);
-  process.stdout.write(row);
-};
-
-functions.renderGraph = function (frameObject, left, top, rowWidth, rowHeight) {
-  var rowTop = top - rowHeight;
-  var i;
-
-  for (i = frameObject.array.length; 0 < i; i--) {
-    functions.renderGraphRow(frameObject, i, left, rowTop += rowHeight, rowWidth, rowHeight);
-  }
+  return row;
 };
 
 module.exports = functions;
